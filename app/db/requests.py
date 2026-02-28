@@ -1,5 +1,5 @@
 from app.db.models import User, UserItem, async_session
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, update
 
 # async def get_categories():
 #     async with async_session() as session:
@@ -38,6 +38,27 @@ async def set_useritem(userdata: dict, itemdata: dict):
         )
         session.add(useritem)
         await session.commit()
+
+async def update_user_item(
+    date_id: int,
+    itemdata
+) -> bool:
+    if not itemdata:
+        return False
+
+    async with async_session() as session:
+        async with session.begin():
+            stmt = (
+                update(UserItem)
+                .where(UserItem.id == date_id)
+                .values(username=itemdata.get('username'), name=itemdata.get('name'), date=itemdata.get('date'))
+                .execution_options(synchronize_session="fetch")
+            )
+            
+            result = await session.execute(stmt)
+            await session.commit()
+            
+            return result.rowcount > 0
 
 PAGE_SIZE = 6  # сколько дат загружаем за раз
 

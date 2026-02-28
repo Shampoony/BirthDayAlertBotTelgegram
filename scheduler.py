@@ -57,7 +57,7 @@ async def send_birthday_message(chat_id: int, username: str, name: str, bot):
     logger.info(f"Отправляем напоминание в чат {chat_id}")
 
     try:
-        username.replace('@', '')
+        username = username.replace('@', '')
 
         congratulation = get_birthday_congratulation()
         mention = f"{username}" if username and username != "—" else name
